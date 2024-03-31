@@ -35,6 +35,8 @@ DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
 )
 
+logger = logging.getLogger("flask.app")
+
 
 ######################################################################
 #  P R O D U C T   M O D E L   T E S T   C A S E S
@@ -104,3 +106,79 @@ class TestProductModel(unittest.TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+
+    def test_find(self):
+        """It should Reade a product by id"""
+        product = ProductFactory()
+        logger.debug("Creating %s", product.name)
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        found_product = Product.find(product.id)
+        self.assertEqual(found_product.name, product.name)
+        self.assertEqual(found_product.description, product.description)
+        self.assertEqual(found_product.price, product.price)
+        self.assertEqual(found_product.available, product.available)
+        self.assertEqual(found_product.category, product.category)
+
+    def test_update(self):
+        """Test Update a Product"""
+        product = ProductFactory()
+        logger.debug("Creating %s", product.name)
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        product.name = "test_name"
+        product.update()
+        found_product = Product.find(product.id)
+        self.assertEqual(found_product.name, "test_name")
+        self.assertEqual(found_product.description, product.description)
+        self.assertEqual(found_product.price, product.price)
+        self.assertEqual(found_product.available, product.available)
+        self.assertEqual(found_product.category, product.category)
+
+    def test_delete(self):
+        """Removes a Product from the data store"""
+        raise NotImplementedError
+
+    def test_all(self) -> list:
+        """Returns all of the Products in the database"""
+        raise NotImplementedError
+
+    def test_find_by_name(self) -> list:
+        """Returns all Products with the given name
+
+        :param name: the name of the Products you want to match
+        :type name: str
+
+        :return: a collection of Products with that name
+        :rtype: list
+
+        """
+        raise NotImplementedError
+
+    def test_find_by_availability(self) -> list:
+        """Returns all Products by their availability
+
+        :param available: True for products that are available
+        :type available: str
+
+        :return: a collection of Products that are available
+        :rtype: list
+
+        """
+        raise NotImplementedError
+
+    def test_find_by_category(self) -> list:
+        """Returns all Products by their Category
+
+        :param category: values are ['MALE', 'FEMALE', 'UNKNOWN']
+        :type available: enum
+
+        :return: a collection of Products that are available
+        :rtype: list
+
+        """
+        raise NotImplementedError
