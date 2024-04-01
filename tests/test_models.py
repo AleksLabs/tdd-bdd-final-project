@@ -27,7 +27,7 @@ import os
 import logging
 import unittest
 from decimal import Decimal
-from service.models import Product, Category, db
+from service.models import Product, Category, db, DataValidationError
 from service import app
 from tests.factories import ProductFactory
 
@@ -123,62 +123,139 @@ class TestProductModel(unittest.TestCase):
         self.assertEqual(found_product.category, product.category)
 
     def test_update(self):
-        """Test Update a Product"""
+        """It should Update a Product"""
+        product = ProductFactory()
+        logger.debug("Creating %s", product.name)
+        product.id = None
+        product.create()
+        original_id = product.id
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        product.description = "test_description"
+        product.update()
+        products = Product.all()
+        self.assertEqual(len(products), 1)
+        updated_product = Product.find(product.id)
+        self.assertEqual(updated_product.id, original_id)
+        self.assertEqual(updated_product.description, "test_description")
+        self.assertEqual(len(products), 1)
+        self.assertEqual(products[0].id, original_id)
+        self.assertEqual(products[0].description, "test_description")
+
+    def test_delete(self):
+        """It should Delete a Product"""
         product = ProductFactory()
         logger.debug("Creating %s", product.name)
         product.id = None
         product.create()
         # Assert that it was assigned an id and shows up in the database
         self.assertIsNotNone(product.id)
-        product.name = "test_name"
-        product.update()
-        found_product = Product.find(product.id)
-        self.assertEqual(found_product.name, "test_name")
-        self.assertEqual(found_product.description, product.description)
-        self.assertEqual(found_product.price, product.price)
-        self.assertEqual(found_product.available, product.available)
-        self.assertEqual(found_product.category, product.category)
-
-    def test_delete(self):
-        """Removes a Product from the data store"""
-        raise NotImplementedError
+        products = Product.all()
+        self.assertEqual(len(products), 1)
+        product.delete()
+        products = Product.all()
+        self.assertEqual(len(products), 0)
 
     def test_all(self) -> list:
-        """Returns all of the Products in the database"""
-        raise NotImplementedError
+        """It should return all of the Products in the database"""
+        products = Product.all()
+        self.assertEqual(len(products), 0)
+        for _ in range(5):
+            product = ProductFactory()
+            logger.debug("Creating %s", product.name)
+            product.id = None
+            product.create()
+        products = Product.all()
+        self.assertEqual(len(products), 5)
 
     def test_find_by_name(self) -> list:
-        """Returns all Products with the given name
-
-        :param name: the name of the Products you want to match
-        :type name: str
-
-        :return: a collection of Products with that name
-        :rtype: list
-
-        """
-        raise NotImplementedError
+        """It should return all Products with the given name"""
+        for _ in range(10):
+            product = ProductFactory()
+            logger.debug("Creating %s", product.name)
+            product.id = None
+            product.create()
+        products = Product.all()
+        name = products[0].name
+        count = 0
+        for product in products:
+            if product.name == name:
+                count += 1
+        self.assertEqual(Product.find_by_name(name).count(), count)
+        for product in Product.find_by_name(name):
+            self.assertEqual(product.name, name)
 
     def test_find_by_availability(self) -> list:
-        """Returns all Products by their availability
-
-        :param available: True for products that are available
-        :type available: str
-
-        :return: a collection of Products that are available
-        :rtype: list
-
-        """
-        raise NotImplementedError
+        """It shoud return all Products by their availability"""
+        for _ in range(10):
+            product = ProductFactory()
+            logger.debug("Creating %s", product.name)
+            product.id = None
+            product.create()
+        products = Product.all()
+        availability = products[0].available
+        count = 0
+        for product in products:
+            if product.available == availability:
+                count += 1
+        self.assertEqual(Product.find_by_availability(availability).count(), count)
+        for product in Product.find_by_availability(availability):
+            self.assertEqual(product.available, availability)
 
     def test_find_by_category(self) -> list:
-        """Returns all Products by their Category
+        """It should return all Products by their Category"""
+        for _ in range(10):
+            product = ProductFactory()
+            logger.debug("Creating %s", product.name)
+            product.id = None
+            product.create()
+        products = Product.all()
+        category = products[0].category
+        count = 0
+        for product in products:
+            if product.category == category:
+                count += 1
+        self.assertEqual(Product.find_by_category(category).count(), count)
+        for product in Product.find_by_category(category):
+            self.assertEqual(product.category, category)
 
-        :param category: values are ['MALE', 'FEMALE', 'UNKNOWN']
-        :type available: enum
+    def test_find_by_price(self) -> list:
+        """It should return all Products by their Price"""
+        for _ in range(10):
+            product = ProductFactory()
+            logger.debug("Creating %s", product.name)
+            product.id = None
+            product.create()
+        products = Product.all()
+        price = products[0].price
+        count = 0
+        for product in products:
+            if product.price == price:
+                count += 1
+        self.assertEqual(Product.find_by_price(price).count(), count)
+        self.assertEqual(Product.find_by_price(str(price)).count(), count)
+        for product in Product.find_by_price(price):
+            self.assertEqual(product.price, price)
 
-        :return: a collection of Products that are available
-        :rtype: list
+    def test_update_vealidatiion_error(self):
+        """It should raise validation error if id is empty"""
+        product = ProductFactory()
+        logger.debug("Creating %s", product.name)
+        product.id = None
+        product.create()
+        # Assert that it was assigned an id and shows up in the database
+        self.assertIsNotNone(product.id)
+        product.description = "test_description"
+        product.id = None
+        self.assertRaises(DataValidationError, product.update)
 
-        """
-        raise NotImplementedError
+    def test_no_valid_availability_vealidatiion_error(self):
+        """It should raise Validation error if availability is not bool"""
+        product = ProductFactory()
+        data = {"name": "Fedora",
+                "description": "A red hat",
+                "price": 12.50,
+                "available": "Test",
+                "category": Category.CLOTHS}
+        with self.assertRaises(DataValidationError):
+            product.deserialize(data=data)
