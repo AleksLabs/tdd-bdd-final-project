@@ -180,10 +180,22 @@ class TestProductRoutes(TestCase):
         fals_product_id = 3
         response = self.client.get(f"{BASE_URL}/{fals_product_id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = self.client.put(f"{BASE_URL}/{fals_product_id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_product(self):
         """It shoud Update the Product"""
-        raise NotImplementedError
+        test_product = self._create_products(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        updated_product = response.get_json()
+        updated_product["name"] = "test_name"
+
+        update_response = self.client.put(f"{BASE_URL}/{test_product.id}", json=updated_product)
+        self.assertEqual(update_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(update_response.get_json(), updated_product)
+
 
     def test_delete_product(self):
         """It shoud Delete a Product by id"""
