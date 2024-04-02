@@ -174,6 +174,12 @@ class TestProductRoutes(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(data, test_product.serialize())
+    
+    def test_product_not_found(self):
+        """It shoud return 404 if product not found"""
+        fals_product_id = 3
+        response = self.client.get(f"{BASE_URL}/{fals_product_id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_product(self):
         """It shoud Update the Product"""
