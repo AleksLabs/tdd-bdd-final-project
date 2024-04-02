@@ -169,8 +169,12 @@ class TestProductRoutes(TestCase):
     
     def test_get_product(self):
         """It shoud Get a Product by id"""
-        raise NotImplementedError
-        
+        test_product = self._create_products(1)[0]
+        response = self.client.get(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(data, test_product.serialize())
+
     def test_update_product(self):
         """It shoud Update the Product"""
         raise NotImplementedError
