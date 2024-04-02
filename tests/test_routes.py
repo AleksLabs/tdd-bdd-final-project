@@ -166,6 +166,34 @@ class TestProductRoutes(TestCase):
     #
     # ADD YOUR TEST CASES HERE
     #
+    
+    def test_get_product(self):
+        """It shoud Get a Product by id"""
+        raise NotImplementedError
+        
+    def test_update_product(self):
+        """It shoud Update the Product"""
+        raise NotImplementedError
+
+    def test_delete_product(self):
+        """It shoud Delete a Product by id"""
+        raise NotImplementedError
+
+    def test_list_all_products(self):
+        """It shoud List all the Products"""
+        raise NotImplementedError
+
+    def test_list_by_name(self):
+        """It shoud List the Products by name"""
+        raise NotImplementedError
+
+    def test_list_by_category(self):
+        """It shoud List the Products by category"""
+        raise NotImplementedError
+
+    def test_list_by_availability(self):
+        """It shoud List the Products by availability"""
+        raise NotImplementedError
 
     ######################################################################
     # Utility functions
