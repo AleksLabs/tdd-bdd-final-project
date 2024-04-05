@@ -182,6 +182,8 @@ class TestProductRoutes(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         response = self.client.put(f"{BASE_URL}/{fals_product_id}")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = self.client.delete(f"{BASE_URL}/{fals_product_id}")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_product(self):
         """It shoud Update the Product"""
@@ -199,11 +201,22 @@ class TestProductRoutes(TestCase):
 
     def test_delete_product(self):
         """It shoud Delete a Product by id"""
-        raise NotImplementedError
+        products = self._create_products(5)
+        product_count = self.get_product_count()
+        test_product = products[0]
+        response = self.client.delete(f"{BASE_URL}/{test_product.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        
+
 
     def test_list_all_products(self):
         """It shoud List all the Products"""
-        raise NotImplementedError
+        products = self._create_products(5)
+        product_count = self.get_product_count()
+        test_product = products[0]
+        response = self.client.get(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.get_json()), 5)
 
     def test_list_by_name(self):
         """It shoud List the Products by name"""
