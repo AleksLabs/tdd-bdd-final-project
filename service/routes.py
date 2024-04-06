@@ -23,6 +23,7 @@ from flask import url_for  # noqa: F401 pylint: disable=unused-import
 from service.models import Product
 from service.common import status  # HTTP Status Codes
 from . import app
+from service.models import Category
 
 
 ######################################################################
@@ -101,7 +102,23 @@ def create_products():
 @app.route("/products", methods=["GET"])
 def list_products():
     app.logger.info("Request to list Products...")
-    products = Product.all()
+    products = []
+    name = request.args.get("name")
+    category = request.args.get("category")
+    available = request.args.get("available")
+    if name:
+        app.logger.info(f"Find by name: {name}")
+        products = Product.find_by_name(name)
+    elif category:
+        app.logger.info(f"Find by category: {category}")
+        category_value = getattr(Category, category.upper())
+        products = Product.find_by_category(category_value)
+    elif available:
+        app.logger.info(f"Find by availability: {available}")
+        products = Product.find_by_availability(available)
+    else:
+        products = Product.all()
+
     results = [product.serialize() for product in products]
     app.logger.info(f"{len(results)} products returned...")
     return results, status.HTTP_200_OK

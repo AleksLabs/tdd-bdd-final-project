@@ -32,6 +32,7 @@ from service import app
 from service.common import status
 from service.models import db, init_db, Product
 from tests.factories import ProductFactory
+from urllib.parse import quote_plus
 
 # Disable all but critical errors during normal test run
 # uncomment for debugging failing tests
@@ -220,15 +221,38 @@ class TestProductRoutes(TestCase):
 
     def test_list_by_name(self):
         """It shoud List the Products by name"""
-        raise NotImplementedError
+        products = self._create_products(10)
+        test_name = products[0].name
+        name_count = len([product for product in products if product.name==test_name])
+        response = self.client.get(f"{BASE_URL}?name={test_name}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(name_count, len(data))
+        for product in data:
+            self.assertEqual(product["name"], test_name)
 
     def test_list_by_category(self):
         """It shoud List the Products by category"""
-        raise NotImplementedError
+        products = self._create_products(10)
+        test_category = products[0].category
+        category_count = len([product for product in products if product.category==test_category])
+        response = self.client.get(f"{BASE_URL}?category={test_category.name}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(category_count, len(data))
+        for product in data:
+            self.assertEqual(product["category"], test_category.name)
 
     def test_list_by_availability(self):
         """It shoud List the Products by availability"""
-        raise NotImplementedError
+        products = self._create_products(10)
+        availible_products_count = len([product for product in products if product.available==True])
+        response = self.client.get(f"{BASE_URL}?available={True}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = response.get_json()
+        self.assertEqual(availible_products_count, len(data))
+        for product in data:
+            self.assertEqual(product["available"], True)
 
     ######################################################################
     # Utility functions
