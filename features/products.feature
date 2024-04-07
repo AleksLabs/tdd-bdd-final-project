@@ -68,13 +68,30 @@ Scenario: Update a Product
     And I press the "Retrieve" button
     Then I should see the message "Success"
     And I should see "A green fedora" in the "Description" field
-    When Ipress the "Clear" button
+    When I press the "Clear" button
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "A green fedora" in the "Description" field
     And I should not see "A red fedora" in the "Description" field
 
 Scenario: Delete a Product
+    When I visit the "Home Page"
+    And I set the "Name" to "Hat"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "A red fedora" in the "Description" field
+    When I copy the "Id" field
+    And I press the "Clear" button
+    And I paste the "Id" field
+    Then I should see the message "Success"
+    And I should see "Hat" in the "Name" field
+    When I press the "Delete" button
+    Then I should see the message "Product has been Deleted!"
+    When I paste the "Id" field
+    And I press the "Retrieve" button
+    Then I should not see "Hat" in the results
+
+
 
 
 Scenario: List all Product
