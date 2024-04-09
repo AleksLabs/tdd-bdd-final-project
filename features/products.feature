@@ -96,22 +96,24 @@ Scenario: List all Product
     And I press the "Clear" button
     And I press the "Search" button
     Then I should see the message "Success"
-    And I should not see "Hat" in the results
-    And I should not see "Shoes" in the results
-    And I should not see "Big Mac" in the results
-    And I should not see "Sheets" in the results
+    And I should see "Hat" in the results
+    And I should see "Shoes" in the results
+    And I should see "Big Mac" in the results
+    And I should see "Sheets" in the results
     
 
 Scenario: Search a Product by Category
     When I visit the "Home Page"
+    And I press the "Clear" button
     And I set the "Category" to "CLOTHS"
     And I press the "Search" button
     Then I should see the message "Success"
-    And I should not see "Hat" in the results
-    And I should not see "Shoes" in the results
-
+    And I should see "Hat" in the results
+    And I should see "Shoes" in the results
+    And I should not see "Big Mac" in the results
 
 Scenario: Search a Product by Availability
+
 
 
 Scenario: Search a Product by Name
