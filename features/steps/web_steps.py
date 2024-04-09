@@ -113,6 +113,16 @@ def step_impl(context, button):
         expected_conditions.presence_of_element_located((By.ID, element_id))
     )
     element.click()
+
+@then('I should see "{text_string}" in the results')
+def step_impl(context, text_string):
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element_value(
+            (By.ID, 'search_results'),
+            text_string
+        )
+    )
+    assert(found)
     
 
 ##################################################################
