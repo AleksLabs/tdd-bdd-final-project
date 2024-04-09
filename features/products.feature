@@ -113,6 +113,15 @@ Scenario: Search a Product by Category
     And I should not see "Big Mac" in the results
 
 Scenario: Search a Product by Availability
+    When I visit the "Home Page"
+    And I press the "Clear" button
+    And I set the "Available" to "False"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "Shoes" in the results
+    And I should not see "Hat" in the results 
+    And I should not see "Big Mac" in the results
+    And I should not see "Sheets" in the results
 
 
 
