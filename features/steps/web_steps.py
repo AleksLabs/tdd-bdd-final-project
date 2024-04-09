@@ -106,6 +106,15 @@ def step_impl(context, element_name):
 
 ## UPDATE CODE HERE ##
 
+@When('I press the "{button}" button')
+def step_impl(context, button):
+    element_id = element_name.lower().replace(' ', '_') + "-btn"
+    element = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.presence_of_element_located((By.ID, element_id))
+    )
+    element.click()
+    
+
 ##################################################################
 # This code works because of the following naming convention:
 # The id field for text input in the html is the element name
